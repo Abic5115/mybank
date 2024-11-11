@@ -11,6 +11,11 @@ let loginpg = document.getElementById("main2");
 let signuppg = document.getElementById("main1");
 let loginbutton1 = document.getElementById("loginbutton1");
 let homelink = document.getElementById("h14")
+let depositbutton = document.getElementById("i6");
+let withdrawbutton = document.getElementById("i12");
+let accountbutton = document.getElementById("i13");
+let transferbutton = document.getElementById("i14");
+
 signuplink.addEventListener("click", () => {
   homepg.style.display = "none";
   loginpg.style.display = "none";
@@ -20,14 +25,61 @@ homelink.addEventListener("click", () => {
   homepg.style.display = "block";
   loginpg.style.display = "none";
   signuppg.style.display = "none";
+  
+  
 });
 
+depositbutton.addEventListener('click', () => {
 
+  let recentLogin = JSON.parse(localStorage.getItem("recentlogin"));
+  
+  if (!recentLogin) {
+  
+    alert("Please login to proceed");
+    return;
+  }
+})
+  
+
+withdrawbutton.addEventListener('click', () => {
+
+  let recentLogin = JSON.parse(localStorage.getItem("recentlogin"));
+  
+  if (!recentLogin) {
+  
+    alert("Please login to proceed");
+    return;
+  }
+})
+
+accountbutton.addEventListener('click', () => {
+
+  let recentLogin = JSON.parse(localStorage.getItem("recentlogin"));
+  
+  if (!recentLogin) {
+  
+    alert("Please login to proceed");
+    return;
+  }
+})
+
+transferbutton.addEventListener('click', () => {
+
+  let recentLogin = JSON.parse(localStorage.getItem("recentlogin"));
+  
+  if (!recentLogin) {
+  
+    alert("Please login to proceed");
+    return;
+  }
+})
 let signupbutton = document.getElementById("signupbutton");
 let message1 = document.getElementById("message1");
 let message2 = document.getElementById("message2");
 let message3 = document.getElementById("message3");
 let message4 = document.getElementById("message4");
+
+
 signupbutton.addEventListener("click", () => {
 
   
@@ -44,23 +96,17 @@ signupbutton.addEventListener("click", () => {
   let mail = document.getElementById("email1").value;
   let mailflag = false;
   
-  
   let check = JSON.parse(localStorage.getItem("userdetails")) || [];
+
+ 
   
-  // Regular expression for basic email validation
-  let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  
-  if (!emailPattern.test(mail)) {
-      message2.textContent = "Enter a valid email id";
-      console.log("Invalid email format");
-  } else {
+
       let emailExists = false;
   
-      
       for (let i = 0; i < check.length; i++) {
           if (check[i].email1 === mail) {
               emailExists = true;
-              break; 
+              break;
           }
       }
   
@@ -68,10 +114,16 @@ signupbutton.addEventListener("click", () => {
           message2.textContent = "Email already in use";
           console.log("Email already exists");
       } else {
-          console.log("mail:", mail);
-          mailflag = true; 
+          
+          if (!(mail.endsWith('@gmail.com') || mail.endsWith('@yahoo.com'))) {
+              message2.textContent = "Enter a valid email ";
+              
+          } else {
+              console.log("mail:", mail);
+              mailflag = true; 
+          }
       }
-  }
+  
   
 
   let pass1flag = false;
@@ -232,7 +284,7 @@ loginbutton1.addEventListener("click", () => {
   }
 
   let dialog1 = document.getElementById("dialog1");
-  let depositbutton = document.getElementById("i6");
+  
 
   depositbutton.addEventListener("click", () => {
     document.body.id = "blur";
@@ -303,7 +355,7 @@ loginbutton1.addEventListener("click", () => {
     });
   });
   let dialog2 = document.getElementById("dialog2");
-  let withdrawbutton = document.getElementById("i12");
+ 
   withdrawbutton.addEventListener("click", () => {
     document.body.id = "blur";
 
@@ -339,37 +391,41 @@ loginbutton1.addEventListener("click", () => {
     button3.addEventListener("click", () => {
       var check1 = JSON.parse(localStorage.getItem("recentlogin")) || [];
       var storeddata = JSON.parse(localStorage.getItem("userdetails") || "[]");
-      if (input4.value == check1.rpass) {
-        for (let i = 0; i < storeddata.length; i++) {
-          if (storeddata[i].email1 == check1.rmail) {
-            var withdrawamount = parseFloat(input3.value);
-            storeddata[i].balance1 = parseFloat(storeddata[i].balance1)
-            storeddata[i].withdraw1 = parseFloat(storeddata[i].withdraw1)
-            storeddata[i].withdraw1 += withdrawamount
+    
+      if (input4.value !== check1.rpass) {
+        alert("Wrong password");
+        return;
+      }
+    
+      for (let i = 0; i < storeddata.length; i++) {
+        if (storeddata[i].email1 === check1.rmail) {
+          var withdrawamount = parseFloat(input3.value);
+          
+          if (storeddata[i].balance1 >= withdrawamount) {
+            storeddata[i].balance1 -= withdrawamount;
+            storeddata[i].withdraw1 += withdrawamount;
             storeddata[i].transaction1.push({
               amount1: withdrawamount,
               type: "withdraw",
-              time: new Date()
-          });
-            if(storeddata[i].balance1 >= withdrawamount){
-              alert("amount successfully withdrawn")
-              storeddata[i].balance1 = storeddata[i].balance1 - withdrawamount
-              localStorage.setItem("userdetails", JSON.stringify(storeddata));
-              input3.value = "";
-              input4.value = "";
-              
-              
-              
-            }
-            else{
-              alert("insufficient balance")
-            }
-            
-          }}}
-          else {
-            alert("wrong password");
+              time: new Date().toLocaleString()
+            });
+            localStorage.setItem("userdetails", JSON.stringify(storeddata));
+            input3.value = "";
+            input4.value = "";
+            alert("Amount successfully withdrawn");
+          } else {
+            alert("Insufficient balance");
+            input3.value = "";
+            input4.value = "";
           }
+    
+          return;
+        }
+      }
+    
+      alert("User not found.");
     });
+    
 
     button4.addEventListener("click", () => {
       dialog2.close();
@@ -378,7 +434,7 @@ loginbutton1.addEventListener("click", () => {
   });
 
   let dialog3 = document.getElementById("dialog3");
-  let accountbutton = document.getElementById("i13");
+  
   accountbutton.addEventListener("click", () => {
     document.body.id = "blur";
 
@@ -466,7 +522,7 @@ loginbutton1.addEventListener("click", () => {
   })
 // transfer money --------------------------------------------------------------------   ----------------
       let dialog5 = document.getElementById("dialog5");
-  let transferbutton = document.getElementById("i14");
+ 
   transferbutton.addEventListener("click", () => {
     document.body.id = "blur";
 
